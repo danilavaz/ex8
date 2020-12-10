@@ -8,9 +8,12 @@ MAYBE = -1
 def check_row_validity(row: List[int], blocks: List[int]):
     if BLACK not in row:
         return True
-
     black_ind = row.index(BLACK)
-    white_ind = row[black_ind:].index(WHITE) if WHITE in row[black_ind:] else -1
+
+    if WHITE in row[black_ind:]:
+        white_ind = row[black_ind:].index(WHITE)+black_ind
+    else:
+        return True
 
     if white_ind - black_ind != blocks[0]:
         return False
