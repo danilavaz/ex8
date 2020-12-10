@@ -14,10 +14,12 @@ def check_row_validity(n: int, row: List[int], blocks: List[int]):
     black_ind = row.index(BLACK)
 
     if WHITE in row[black_ind:]:
-        #[0,1,0] = black_ind = 1 [1,0]
-        white_ind = row[black_ind:].index(WHITE)+black_ind
+        white_ind = row[black_ind:].index(WHITE) + black_ind
     else:
-        return True
+        if len(row[black_ind:]) > blocks[0]:
+            return False
+        else:
+            return True
 
     if white_ind - black_ind != blocks[0]:
         return False
@@ -41,7 +43,9 @@ def get_options(n, blocks, org_n):
 
     return all_options
 
+
 def constraint_satisfactions(n, blocks):
     return get_options(n, blocks, n)
 
-print(constraint_satisfactions(3,[1]))
+
+print(constraint_satisfactions(16,[2,3,1,1,4]))
