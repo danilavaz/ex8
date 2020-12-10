@@ -1,4 +1,8 @@
+from typing import *
 
+BLACK = 1
+WHITE = 0
+MAYBE = -1
 
 def turn_to_int(list):
     new_list = []
@@ -9,17 +13,59 @@ def turn_to_int(list):
         new_list.append(list_)
 
     return new_list
+
+
 def constraint_satisfactions(n, blocks):
     return turn_to_int(test_restriction(all_options(n, blocks, n), blocks))
 
-def all_options(n, restriction, org_n):
+
+def minimal_row_length(blocks: List[int]):
+    return sum(blocks)+ len(blocks)-1
+
+
+def check_row_validity(row: List[int], blocks: List[int]):
+    if BLACK not in row:
+        return True
+
+    black_ind = row.index(BLACK)
+
+    if WHITE not in row[black_ind:]:
+        if len(row[black_ind:]) > blocks[0]:
+            return False
+        else:
+            return True
+
+    white_ind = row[black_ind:].index(WHITE)
+
+    if white_ind - black_ind != blocks[0]:
+        return False
+
+    return check_row_validity(row[white_ind:], blocks[1:])
+
+def get_options(n, blocks, org_n):
+    if n == 0:
+        return []
+
+    all_options = []
+    for option in get_options(n-1, blocks, org_n):
+        for i in range(2):
+            added_options = option+[i]
+            if check_row_validity(added_options, blocks):
+                all_options.append(added_options)
+
+    return all_options
+
+
+
+
+def all_options(n, restriction, org_n) -> List[List[str]]:
 
     if n == 0:
-        return [""]
+        return [[]]
     option_list = []
     for option in all_options(n-1, restriction, org_n):
         for i in restriction:
-            x = option + "1" * i
+            x = option + ["1"]*i
             if i > 1:
                 if len(x) <= org_n:
                     if option == "" or option[-1] == "0":
@@ -39,6 +85,46 @@ def all_options(n, restriction, org_n):
         if len(y) <= org_n:
              option_list.append(option + "0")
     return option_list
+
+
+# def all_options_2(n, blocks: List[int], org_n):
+#     if n == 0:
+#         return []
+#     if sum(blocks) > n:
+#         return []
+#
+#     option_list = []
+#     for option in all_options_2(n-1, blocks, org_n):
+#         for i in blocks:
+#             added = option + [1]*i
+#                 if len(added) <= org_n:
+
+
+# def check_row_validity(row: List[int], blocks: List[int]):
+#         if len(blocks) == 0:
+#             return 1 not in row
+#
+#         if 1 not in row or len(row) < blocks[0]:
+#             return False
+#
+#         black_ind = row.index(1)
+#         if 0 not in row[black_ind:]:
+#             if len(blocks) > 1 or len(row[black_ind:]) != blocks[0]:
+#                 return False
+#             else:
+#                 return True
+#
+#         white_ind = row[black_ind:].index(0)
+#
+#         if white_ind - black_ind != blocks[0]:
+#             return False
+#
+#         return check_row_validity(row[white_ind:],blocks[1:])
+
+
+
+def try2(row, blocks):
+
 
 def test_restriction(output_list, restriction):
     new_list = []
@@ -96,3 +182,5 @@ def all_options_(n):
         option_list.append(option + "1")
     return option_list
 #print(all_options_(3))
+
+
