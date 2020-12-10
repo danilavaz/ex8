@@ -27,6 +27,7 @@ def check_row_validity(n: int, row: List[int], blocks: List[int]):
     return check_row_validity(n, row[white_ind:], blocks[1:])
 
 
+
 def get_options(n, blocks, org_n):
     if n == 0:
         return []
