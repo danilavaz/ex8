@@ -21,11 +21,16 @@ def all_options(n, restriction, org_n):
         for i in restriction:
             x = option + "1" * i
             if i > 1:
-                if '1' in option:
-                    continue
-            if len(x) <= org_n:
-                if option == "" or option[-1] == "0":
-                    option_list.append(option + "1" * i)
+                if len(x) <= org_n:
+                    if option == "" or option[-1] == "0":
+                        option_list.append(option + "1" * i)
+                        if "0" not in option[1:]:
+                            break
+            else:
+                if len(x) <= org_n:
+                    if option == "" or option[-1] == "0":
+                        option_list.append(option + "1" * i)
+
         if len(option) == org_n:
             option_list.append(option)
         y = option + "0"
@@ -33,8 +38,6 @@ def all_options(n, restriction, org_n):
             continue
         if len(y) <= org_n:
              option_list.append(option + "0")
-
-
     return option_list
 
 def test_restriction(output_list, restriction):
@@ -53,7 +56,43 @@ def test_restriction(output_list, restriction):
                     new_list.append(num)
     return new_list
 
-print(constraint_satisfactions( 6,[2,1,1]))
+#print(constraint_satisfactions( 5,[2,2]))
+
+def _row_variations_helper(row, blocks, num_of_row):
+    if num_of_row == 0:
+        return [""]
+    option_list = []
+    for option in _row_variations_helper(row, blocks, num_of_row-1):
+        for i in blocks:
+            x = option + "1" * i
+            if i > 1:
+                if '1' in option:
+                    continue
+            if len(x) <= org_n:
+                if option == "" or option[-1] == "0":
+                    option_list.append(option + "1" * i)
+        if len(option) == org_n:
+            option_list.append(option)
+        y = option + "0"
+        if len(y) == org_n and "1" not in option:
+            continue
+        if len(y) <= org_n:
+             option_list.append(option + "0")
+
+
+    return option_list
 
 
 
+
+def all_options_(n):
+    if n == 0:
+        return []
+    if n == 1:
+        return ["0","1"]
+    option_list = []
+    for option in all_options_(n-1):
+        option_list.append(option +"0")
+        option_list.append(option + "1")
+    return option_list
+#print(all_options_(3))
