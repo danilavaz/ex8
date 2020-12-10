@@ -5,12 +5,16 @@ WHITE = 0
 MAYBE = -1
 
 
-def check_row_validity(row: List[int], blocks: List[int]):
+def check_row_validity(n: int, row: List[int], blocks: List[int]):
+    if len(row) == n and row.count(BLACK) != sum(blocks):
+        return False
+
     if BLACK not in row:
         return True
     black_ind = row.index(BLACK)
 
     if WHITE in row[black_ind:]:
+        #[0,1,0] = black_ind = 1 [1,0]
         white_ind = row[black_ind:].index(WHITE)+black_ind
     else:
         return True
@@ -18,7 +22,7 @@ def check_row_validity(row: List[int], blocks: List[int]):
     if white_ind - black_ind != blocks[0]:
         return False
 
-    return check_row_validity(row[white_ind:], blocks[1:])
+    return check_row_validity(n, row[white_ind:], blocks[1:])
 
 
 def get_options(n, blocks, org_n):
@@ -32,9 +36,7 @@ def get_options(n, blocks, org_n):
     for option in get_options(n-1, blocks, org_n):
         for i in range(2):
             added_options = option+[i]
-            if len(added_options) == org_n and added_options.count(BLACK) != sum(blocks):
-                continue
-            if check_row_validity(added_options, blocks):
+            if check_row_validity(org_n, added_options, blocks):
                 all_options.append(added_options)
 
     return all_options
