@@ -180,12 +180,17 @@ def constraint_satisfactions(n: int, blocks: Blocks) -> List[Row]:
     """
     if not blocks:
         return [[0]*n]
-    return get_options(n, blocks, n)
+    options = get_options(n, blocks, n)
+    return options
 
 
 def intersection_row(rows: List[Row]) -> Row:
     """
     combines a list of rows into one general row
+    If there are two different none-MAYBE values for a certain square, the
+    function will place a MAYBE and move to next square
+    If a certain square only hold MAYBEs and a single kind of filling, the
+    function will place the filling in the square
     :param rows: the rows to intersect
     :return: the intersection of the rows
     """
@@ -214,7 +219,7 @@ def get_row(n: int, constraints: Blocks) -> Row:
     """
     rows = constraint_satisfactions(n, constraints)
     if constraints and not rows:
-        return None
+        return []
     return intersection_row(rows)
 
 
@@ -230,7 +235,7 @@ def fill_all_rows(n: int, constraints: List[Blocks]) -> Board:
         row_constraints = constraints[i]
         row = get_row(n, row_constraints)
         if not row:
-            return None
+            return []
         board.append(row)
 
     return board
@@ -262,11 +267,11 @@ def apply_col_constraints(board: Board, col_constraints: Constraints) -> Board:
         :return: the board after changes were applied
         """
     if not board:
-        return None
+        return []
     flipped_board = flip_board(board)
     flipped_board = apply_row_constraints(flipped_board, col_constraints)
     if not flipped_board:
-        return None
+        return []
     return flip_board(flipped_board)
 
 
@@ -361,6 +366,7 @@ def solve_nonogram(constraints: FullConstraints) -> List[Board]:
     :param constraints: the constraints of the board
     :return: a list of possible solutions
     """
+    print(len(constraints[0]),len(constraints[1]))
     board = create_by_constraints(constraints)
     if not board:
         return []
@@ -377,6 +383,9 @@ def solve_nonogram_helper(constraints: FullConstraints,
     :param solutions: list to append solutions to
     :return: a list of solutions
     """
+
+    # print_board(board)
+
     if not board or board in solutions or not is_board_valid(board, constraints):
         return []
 
@@ -384,12 +393,12 @@ def solve_nonogram_helper(constraints: FullConstraints,
         solutions.append(board[:])
 
     for i, row in enumerate(board):
-        org_row = board[i]
-        if MAYBE not in board[i]:
-            continue
-        for variation in row_variations(row, constraints[0][i]):
-            if variation != board[i]:
-                board[i] = variation
-                solve_nonogram_helper(constraints, board, solutions)
-                board[i] = org_row
+        if MAYBE in board[i]:
+            variations = row_variations(row, constraints[ROW_CONSTRAINTS][i])
+            for variation in variations:
+                if variation != board[i]:
+                    board[i] = variation
+                    new_board = apply_col_constraints(board, constraints[COL_CONSTRAINTS])
+                    solve_nonogram_helper(constraints, new_board, solutions)
+
     return solutions
