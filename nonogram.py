@@ -57,7 +57,7 @@ def row_variations(row: Row, blocks: Blocks) -> List[Row]:
     :return: list of variations of the row
     """
     if not row:
-        return []
+        return [[]]
     return row_variations_helper(row, blocks, [])
 
 
